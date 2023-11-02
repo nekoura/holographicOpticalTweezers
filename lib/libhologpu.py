@@ -1,3 +1,5 @@
+# Origin Author: TOMOYUKI KUROSAWA (https://github.com/kurokuman/Gerchberg-Saxton-algorithm)
+
 import cv2
 import cupy as cp
 
@@ -58,8 +60,12 @@ def GSiteration(maxIterNum: int, uniThres: float, targetImg, unfmList: list):
     :return: phase - 相位, normIntensity - 归一化光强
     """
     height, width = targetImg.shape[:2]
-    # 初始迭代相位：以随机相位分布作为初始迭代相位
-    phase = cp.random.rand(height, width)
+    # (deprecated)初始迭代相位：以随机相位分布作为初始迭代相位
+    # phase = cp.random.rand(height, width)
+    # 初始迭代相位：以目标光场IFFT作为初始迭代相位以增强均匀性
+    # initU = cp.fft.ifftshift(cp.fft.ifft2(targetImg))
+    # phase = cp.angle(initU) + 2*cp.pi*(cp.random.uniform(0,1,(height, width))-0.5)/cp.sinc(cp.abs(initU)))
+    phase = cp.fft.ifftshift(cp.fft.ifft2(targetImg))
     # 光场复振幅：生成和target相同尺寸的空数组
     u = cp.empty_like(targetImg, dtype="complex")
     # 初始
@@ -138,5 +144,4 @@ def reconstruct(normIntensity):
     rec = normIntensity * 255
     rec = rec.astype("uint8")
     return rec
-
 

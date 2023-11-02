@@ -1,15 +1,16 @@
 import cv2
 import numpy as np
 import sys
+import time
 from PyQt5.QtCore import Qt, QTimer
 from PyQt5.QtGui import QImage, QPixmap
 from PyQt5.QtWidgets import QApplication, QMainWindow, QLabel
 
 # 设置图像的宽度和高度
-width, height = 1920, 1080
+width, height = 1080, 1080
 fps = 30.0
 step = 5
-radius = 5
+radius = 10
 center_radius = 5
 
 # 创建一个类来存储点的信息和状态
@@ -32,19 +33,23 @@ class ImageViewer(QMainWindow):
         # 创建标签用于显示图像
         self.image_label = QLabel(self)
         self.image_label.setAlignment(Qt.AlignCenter)
-        self.setCentralWidget(self.image_label)
+        self.image_label.setStyleSheet("background-color: #cccccc")
+        # self.setCentralWidget(self.image_label)
+        self.image_label.resize(width, height)
 
         # 创建窗口
         self.setWindowTitle('Image Viewer')
-        self.setGeometry(10, 50, width - 20, height - 120)
-        self.showMaximized()
+        self.setGeometry(10, 50, width, height)
+        # self.showMaximized()
+        self.show()
 
         # 初始化帧
         self.frame = np.zeros((height, width, 3), dtype=np.uint8)
 
         # 创建视频写入对象
         self.fourcc = cv2.VideoWriter_fourcc(*'XVID')
-        self.out = cv2.VideoWriter(f'output_gauss.avi', self.fourcc, fps, (width, height))
+        if (point.stop_generation == True):
+            self.out = cv2.VideoWriter(f'../../vids/output_gauss{time.strftime("%Y%m%d%H%M%S")}.avi', self.fourcc, fps, (width, height))
 
         # 鼠标点击事件处理函数
         def mousePressEvent(event):

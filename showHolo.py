@@ -15,16 +15,20 @@ from colorama import init
 init(autoreset=True)
 
 # CONFIGS
-maxIterNum = 100                                            # 最大迭代数
-uniThres = 0.66                                             # 均匀度阈值
-fps = 30.0                                                  # 输出视频帧率
-codec = "libx264"                                           # 视频编码器
-crf = 20                                                    # 视频码率
+maxIterNum = 100            # 最大迭代数
+uniThres = 0.66             # 均匀度阈值
+fps = 5.0                  # 输出视频帧率
+codec = "libx264"           # 视频编码器
+crf = 20                    # 视频码率
 
-inputVid = './vids/output_gauss-R30.avi'                           # 输入视频文件
-imgName = "point"                                           # 输出临时帧主文件名
-imgFold = f'./frames/gauss{time.strftime("%Y%m%d%H%M%S")}/'    # 替换为包含要合成为视频的所有.tif图像的文件夹路径
-outputVid = './vids/gaussphasevid.mp4'                           # 输出视频文件
+# 输入视频文件
+inputVid = './vids/output_gauss-squre-r10.avi'
+# 输出临时帧主文件名
+imgName = "point"
+# 输出临时帧文件夹路径
+imgFold = f'./frames/gauss-squre-r10-{time.strftime("%Y%m%d%H%M%S")}/'
+# 输出视频文件
+outputVid = './vids/gaussphasevid-squre-r10-fps5.mp4'
 
 
 # 窗体类
@@ -128,6 +132,7 @@ def loopCalcHoloGPU():
         holo = cp.asnumpy(holo)
 
         # 写图
+        holo = cv2.rotate(holo, cv2.ROTATE_90_CLOCKWISE)
         cv2.imwrite(f"{imgFold}{imgName}-{frameNum:03d}.tif", holo)
 
         # -----结束计时-----

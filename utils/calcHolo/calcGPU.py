@@ -37,14 +37,28 @@ def genTargetImg():
 
 
 def main():
-    imgName = "T"
+    imgName = "circle"
     # 迭代数
     maxIterNum = 100
     # 均匀度阈值
     uniThres = 0.66
 
     uniformity = []
-    imgPath = f"{imgName}.jpg"
+    imgPath = f"../../utils/samples/{imgName}.jpg"
+
+    period = 20
+
+    # gratv = libholo.loadImg(f"../../grat_v{period}.tif")
+    # gratv = gratv.astype("float")
+    # grath = libholo.loadImg(f"../../grat_h{period}.tif")
+    # grath = grath.astype("float")
+
+    fresnel = libholo.loadImg("../../fresnellens.tif")
+    fresnel = fresnel.astype("float")
+
+    # grat = gratv + grath
+    # grat = gratv
+    # grat = grath
     target = libholo.loadImg(imgPath)
 
     # target = genTargetImg()
@@ -64,11 +78,22 @@ def main():
 
     # CuPy类型转换(CuPy->NumPy)
     holo = cp.asnumpy(holo)
+    holo = holo.astype("float")
+    # holo = holo + gratv
+    # holo = holo + grath
+    holo = holo + fresnel
+    holo = holo.astype("uint8")
+
     # rec = cp.asnumpy(rec)
 
-    cv2.imwrite(f"img/weighted_holo-{imgName}-unif{round(uniformity[-1],4)}.bmp", holo)
+    holo = cv2.rotate(holo, cv2.ROTATE_90_CLOCKWISE)
+    cv2.imwrite(f"../../{imgName}-{time.strftime('%Y%m%d%H%M%S')}-unif{round(uniformity[-1],4)}.tif", holo)
+
     Tend = time.time()
     # cv2.imwrite(f"img/weighted_rec-{imgName}-unif{round(uniformity[-1],4)}.bmp", rec)
+
+    # cv2.imshow("holo", holo)
+    # cv2.waitKey(0)
 
     # 性能
     print(f"Iteration: {len(uniformity)}")
